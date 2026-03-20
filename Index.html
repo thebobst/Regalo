@@ -1,1 +1,371 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎄 Regalo Perfetto</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #c41e3a;
+    --gold: #f4c842;
+    --green: #1a3d1a;
+    --dark: #0e0a0a;
+    --card: rgba(255,255,255,0.07);
+    --border: rgba(255,255,255,0.13);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 20% 0%, #2a0a0a 0%, #0e1a0e 45%, #0a0a1a 100%);
+    font-family: 'Lato', sans-serif;
+    color: #fff;
+    overflow-x: hidden;
+  }
+  h1, h2, h3 { font-family: 'Playfair Display', serif; }
 
+  /* Snow */
+  .snow-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .flake {
+    position: absolute; top: -10px; border-radius: 50%;
+    background: rgba(255,255,255,0.65);
+    animation: fall linear infinite;
+  }
+  @keyframes fall {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+    100% { transform: translateY(101vh) rotate(360deg); opacity: 0.1; }
+  }
+
+  /* Layout */
+  .container { max-width: 720px; margin: 0 auto; padding: 36px 20px 60px; position: relative; z-index: 1; }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 36px; }
+  .header .tree { font-size: 52px; display: block; margin-bottom: 10px; animation: sway 4s ease-in-out infinite; }
+  @keyframes sway { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+  .header h1 { font-size: 38px; font-weight: 900; background: linear-gradient(135deg, #f4c842 0%, #ff8c42 50%, #c41e3a 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.01em; }
+  .header p { color: rgba(255,255,255,0.4); font-size: 15px; margin-top: 6px; font-style: italic; font-weight: 300; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 6px; background: rgba(255,255,255,0.05); border-radius: 14px; padding: 5px; margin-bottom: 26px; }
+  .tab { flex: 1; padding: 11px; border: none; border-radius: 10px; cursor: pointer; font-family: 'Lato', sans-serif; font-weight: 700; font-size: 14px; transition: all 0.2s; background: transparent; color: rgba(255,255,255,0.45); }
+  .tab.active { background: var(--red); color: #fff; }
+
+  /* Card */
+  .card { background: var(--card); backdrop-filter: blur(14px); border: 1px solid var(--border); border-radius: 18px; padding: 24px; margin-bottom: 14px; }
+
+  /* Banner */
+  .banner { background: linear-gradient(135deg, #c47a0a, #c41e3a); border-radius: 14px; padding: 16px 20px; margin-bottom: 18px; display: flex; gap: 14px; align-items: center; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(196,30,58,0.4); } 50% { box-shadow: 0 0 0 8px rgba(196,30,58,0); } }
+
+  /* Form elements */
+  label.field-label { display: block; font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: 0.09em; text-transform: uppercase; margin-bottom: 6px; }
+  input, select, textarea {
+    width: 100%; background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 10px; padding: 11px 14px; color: #fff; font-size: 15px;
+    font-family: 'Lato', sans-serif; outline: none; transition: border 0.2s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+  select option { background: #1a0a0a; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field { margin-bottom: 14px; }
+
+  /* Buttons */
+  .btn { border: none; border-radius: 12px; padding: 10px 20px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: 'Lato', sans-serif; transition: all 0.15s; letter-spacing: 0.02em; }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-primary { background: var(--red); color: #fff; }
+  .btn-primary:hover:not(:disabled) { background: #a81830; }
+  .btn-ghost { background: rgba(255,255,255,0.1); color: #fff; }
+  .btn-ghost:hover { background: rgba(255,255,255,0.17); }
+  .btn-success { background: #2d8a4e; color: #fff; }
+  .btn-warn { background: #d4890a; color: #fff; }
+  .btn-sm { padding: 6px 13px; font-size: 12px; }
+
+  /* Tags */
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .tag { background: rgba(244,200,66,0.18); border: 1px solid rgba(244,200,66,0.35); color: var(--gold); padding: 4px 10px; border-radius: 20px; font-size: 13px; display: flex; align-items: center; gap: 5px; }
+  .tag .rm { cursor: pointer; opacity: 0.6; font-weight: 900; }
+  .tag.green { background: rgba(45,138,78,0.2); border-color: rgba(45,138,78,0.4); color: #6dd68e; }
+  .tag-input-row { display: flex; gap: 8px; }
+  .tag-input-row input { flex: 1; }
+
+  /* Person card */
+  .person-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .person-name { font-size: 21px; font-weight: 900; font-family: 'Playfair Display', serif; }
+  .badge { background: var(--red); color: #fff; font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 20px; }
+  .person-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .budget-box { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.08); border-radius: 10px; padding: 6px 13px; }
+  .budget-box input { width: 65px; background: none; border: none; color: #fff; font-weight: 700; font-size: 16px; padding: 0; }
+
+  /* Gift modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .modal { background: #140c0c; border: 1px solid var(--border); border-radius: 20px; padding: 28px; max-width: 580px; width: 100%; max-height: 85vh; overflow-y: auto; position: relative; }
+  .modal-close { position: absolute; top: 16px; right: 18px; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; }
+  .gift-item { background: rgba(255,255,255,0.06); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+  .gift-title { font-size: 17px; font-weight: 700; font-family: 'Playfair Display', serif; }
+  .gift-price { color: var(--gold); font-size: 13px; font-weight: 700; margin-top: 2px; }
+  .gift-desc { color: rgba(255,255,255,0.65); font-size: 14px; margin-top: 6px; }
+  .gift-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .gift-link { font-size: 13px; color: var(--gold); text-decoration: none; background: rgba(244,200,66,0.13); padding: 4px 12px; border-radius: 8px; }
+
+  /* Settings */
+  .settings-note { background: rgba(244,200,66,0.08); border: 1px solid rgba(244,200,66,0.2); border-radius: 12px; padding: 14px; margin-bottom: 18px; font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.6; }
+  .settings-note strong { color: var(--gold); }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; right: 24px; z-index: 200; color: #fff; padding: 13px 22px; border-radius: 12px; font-weight: 700; font-size: 14px; box-shadow: 0 4px 24px rgba(0,0,0,0.5); animation: slideup 0.25s ease; }
+  @keyframes slideup { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 52px 24px; }
+  .empty .icon { font-size: 52px; margin-bottom: 14px; }
+  .empty p { color: rgba(255,255,255,0.45); margin-bottom: 22px; font-size: 15px; }
+
+  /* Loader */
+  .loader { text-align: center; padding: 40px; color: rgba(255,255,255,0.55); }
+  .loader .spin { font-size: 38px; display: block; animation: spin 1.5s linear infinite; margin-bottom: 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .section-label { font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: 0.09em; text-transform: uppercase; margin-bottom: 8px; }
+  .detail-block { margin-bottom: 12px; }
+  .row-end { display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; }
+  .days-warning { font-size: 12px; color: var(--gold); margin-top: 3px; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+</style>
+</head>
+<body>
+
+<div class="snow-wrap" id="snow"></div>
+
+<div class="container">
+  <div class="header">
+    <span class="tree">🎄</span>
+    <h1>Regalo Perfetto</h1>
+    <p>Il tuo assistente personale per i regali di Natale</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('people')">👥 Persone</button>
+    <button class="tab" onclick="switchTab('settings')">⚙️ Impostazioni</button>
+  </div>
+
+  <div id="tab-people">
+    <div id="banner-zone"></div>
+    <div id="people-list"></div>
+    <div id="add-form-zone"></div>
+    <button class="btn btn-ghost" id="btn-add-person" onclick="showAddForm()" style="width:100%;padding:14px;margin-top:6px;display:none">+ Aggiungi un'altra persona</button>
+  </div>
+
+  <div id="tab-settings" style="display:none">
+    <div class="card">
+      <h2 style="color:var(--gold);margin-bottom:6px;font-size:20px">⚙️ Impostazioni</h2>
+      <p style="color:rgba(255,255,255,0.4);font-size:13px;margin-bottom:20px">Queste impostazioni vengono anche salvate come file <code>config.json</code> su GitHub per le automazioni.</p>
+
+      <div class="settings-note">
+        <strong>📧 Email automatiche:</strong> Per attivarle, dopo aver salvato le impostazioni qui, dovrai aggiungere i tuoi token come <em>Secrets</em> su GitHub (ti guiderò). Le email vengono mandate tramite Gmail API.
+      </div>
+
+      <div class="field">
+        <label class="field-label">Email di riepilogo</label>
+        <input type="email" id="set-email" placeholder="turcosim@gmail.com">
+      </div>
+      <div class="field">
+        <label class="field-label">Frequenza check regali (ogni <span id="freq-val">15</span> giorni)</label>
+        <input type="range" id="set-freq" min="1" max="30" value="15" oninput="document.getElementById('freq-val').textContent=this.value" style="accent-color:var(--red);padding:0;background:none;border:none">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,0.35);margin-top:4px"><span>ogni giorno</span><span>ogni 30 giorni</span></div>
+      </div>
+      <div class="field">
+        <label class="field-label">Budget di default (€)</label>
+        <input type="number" id="set-budget" value="50" min="5">
+      </div>
+      <div class="field">
+        <label class="field-label">Anthropic API Key (per suggerimenti AI)</label>
+        <input type="password" id="set-apikey" placeholder="sk-ant-...">
+        <p style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:5px">Salvata solo nel tuo browser, mai inviata altrove.</p>
+      </div>
+      <button class="btn btn-success" onclick="saveSettings()" style="width:100%;padding:13px">💾 Salva impostazioni</button>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h3 style="color:var(--gold);margin-bottom:12px;font-size:17px">🔑 Credenziali Gmail (per email automatiche)</h3>
+      <div class="field">
+        <label class="field-label">Gmail Client ID</label>
+        <input type="password" id="set-client-id" placeholder="xxxxx.apps.googleusercontent.com">
+      </div>
+      <div class="field">
+        <label class="field-label">Gmail Client Secret</label>
+        <input type="password" id="set-client-secret" placeholder="GOCSPX-...">
+      </div>
+      <div class="field">
+        <label class="field-label">Gmail Refresh Token</label>
+        <input type="password" id="set-refresh-token" placeholder="1//0...">
+      </div>
+      <p style="font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:12px">Queste credenziali vengono salvate solo nel browser. Ti dirò dopo come configurarle su GitHub per l'automazione.</p>
+      <button class="btn btn-warn" onclick="saveCredentials()" style="width:100%;padding:13px">🔒 Salva credenziali</button>
+    </div>
+  </div>
+</div>
+
+<!-- Gift Modal -->
+<div class="modal-overlay" id="gift-modal" style="display:none">
+  <div class="modal">
+    <button class="modal-close" onclick="closeGiftModal()">×</button>
+    <h2 style="color:var(--gold);font-size:21px;margin-bottom:4px" id="modal-title">🎁 Idee regalo</h2>
+    <p style="color:rgba(255,255,255,0.45);font-size:13px;margin-bottom:20px" id="modal-budget"></p>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" style="display:none"></div>
+
+<script>
+// ── Storage ──────────────────────────────────────────────────────────────────
+const KEY = 'regalo_v2';
+function load() {
+  try { return JSON.parse(localStorage.getItem(KEY)) || defaultState(); } catch { return defaultState(); }
+}
+function defaultState() {
+  return { people: [], settings: { email: 'turcosim@gmail.com', freqDays: 15, budget: 50 } };
+}
+function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+function uid() { return Math.random().toString(36).slice(2)+Date.now().toString(36); }
+
+let state = load();
+
+// ── Snow ─────────────────────────────────────────────────────────────────────
+(function(){
+  const wrap = document.getElementById('snow');
+  for(let i=0;i<20;i++){
+    const f = document.createElement('div');
+    f.className = 'flake';
+    const s = 4 + (i%4)*2;
+    f.style.cssText = `width:${s}px;height:${s}px;left:${(i*5.1)%100}%;animation-duration:${7+(i%5)}s;animation-delay:${(i*0.35)%5}s`;
+    wrap.appendChild(f);
+  }
+})();
+
+// ── Tabs ─────────────────────────────────────────────────────────────────────
+function switchTab(t) {
+  document.getElementById('tab-people').style.display = t==='people'?'block':'none';
+  document.getElementById('tab-settings').style.display = t==='settings'?'block':'none';
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='people')||(i===1&&t==='settings')));
+  if(t==='settings') loadSettingsForm();
+}
+
+// ── Toast ────────────────────────────────────────────────────────────────────
+function toast(msg, color='#2d8a4e') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.style.background = color; el.style.display = 'block';
+  setTimeout(()=>el.style.display='none', 3000);
+}
+
+// ── Days until ───────────────────────────────────────────────────────────────
+function daysUntil(dateStr) {
+  if(!dateStr) return null;
+  const today = new Date(), target = new Date(dateStr);
+  target.setFullYear(today.getFullYear());
+  if(target < today) target.setFullYear(today.getFullYear()+1);
+  return Math.ceil((target-today)/(1000*60*60*24));
+}
+function fmtDate(d) {
+  if(!d) return '';
+  return new Date(d).toLocaleDateString('it-IT',{day:'2-digit',month:'long'});
+}
+
+// ── Render ───────────────────────────────────────────────────────────────────
+function render() {
+  renderBanner();
+  renderPeople();
+  const btn = document.getElementById('btn-add-person');
+  btn.style.display = state.people.length > 0 ? 'block' : 'none';
+}
+
+function renderBanner() {
+  const urgent = state.people.filter(p => { const d=daysUntil(p.birthday); return d!==null&&d<=45; });
+  const zone = document.getElementById('banner-zone');
+  if(!urgent.length){ zone.innerHTML=''; return; }
+  zone.innerHTML = `<div class="banner">
+    <span style="font-size:28px">⚠️</span>
+    <div>
+      <div style="font-weight:800;margin-bottom:3px">Date importanti in arrivo!</div>
+      <div style="font-size:14px;opacity:0.85">${urgent.map(p=>`${p.name} — tra ${daysUntil(p.birthday)} giorni`).join(' · ')}</div>
+    </div>
+  </div>`;
+}
+
+function renderPeople() {
+  const zone = document.getElementById('people-list');
+  if(!state.people.length && !document.getElementById('add-form-zone').innerHTML) {
+    zone.innerHTML = `<div class="card empty">
+      <div class="icon">🎁</div>
+      <p>Nessuna persona ancora.<br>Inizia aggiungendo qualcuno da sorprendere!</p>
+      <button class="btn btn-primary" onclick="showAddForm()">+ Aggiungi persona</button>
+    </div>`;
+    return;
+  }
+  zone.innerHTML = state.people.map(p => personCardHTML(p)).join('');
+}
+
+function personCardHTML(p) {
+  const days = daysUntil(p.birthday);
+  const daysHtml = p.birthday ? `<div class="days-warning">🎂 ${fmtDate(p.birthday)}${days!==null?` · tra ${days} giorni${days<=45?' ⚠️':''}`:''}</div>` : '';
+  const interests = p.interests.map(i=>`<span class="tag">${i}</span>`).join('');
+  const wishlist = p.wishlist.map(w=>`<span class="tag green">${w}</span>`).join('');
+  const details = (p.interests.length||p.wishlist.length||p.notes) ? `
+    <hr>
+    ${p.interests.length?`<div class="detail-block"><div class="section-label">Interessi</div><div class="tags">${interests}</div></div>`:''}
+    ${p.wishlist.length?`<div class="detail-block"><div class="section-label">Wishlist</div><div class="tags">${wishlist}</div></div>`:''}
+    ${p.notes?`<p style="font-size:13px;color:rgba(255,255,255,0.55);font-style:italic">"${p.notes}"</p>`:''}
+  ` : '';
+  return `<div class="card" id="pc-${p.id}">
+    <div class="person-header">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:3px">
+          <span class="person-name">${p.name}</span>
+          <span class="badge">${p.relation}</span>
+        </div>
+        ${daysHtml}
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="editPerson('${p.id}')">✏️</button>
+        <button class="btn btn-ghost btn-sm" style="color:#ff6b6b" onclick="deletePerson('${p.id}')">🗑</button>
+      </div>
+    </div>
+    ${details}
+    <div class="person-actions">
+      <div class="budget-box">
+        <span style="font-size:13px;color:rgba(255,255,255,0.55)">Budget</span>
+        <span style="color:var(--gold);font-weight:700">€</span>
+        <input type="number" value="${p.budget||state.settings.budget}" id="budget-${p.id}" min="1">
+      </div>
+      <button class="btn btn-primary" onclick="findGifts('${p.id}')">🎁 Trova regali</button>
+    </div>
+  </div>`;
+}
+
+// ── Add / Edit form ──────────────────────────────────────────────────────────
+const RELATIONS = ['Partner','Figlio/a','Genitore','Fratello/Sorella','Amico/a','Collega','Nonno/a','Altro'];
+let editingId = null;
+
+function showAddForm(existingPerson) {
+  editingId = existingPerson ? existingPerson.id : null;
+  const p = existingPerson || { name:'', relation:'Amico/a', interests:[], wishlist:[], notes:'', birthday:'', budget:state.settings.budget };
+  const zone = document.getElementById('add-form-zone');
+  zone.innerHTML = `<div class="card" style="border-color:var(--gold)">
+    <h3 style="color:var(--gold);margin-bottom:18px;font-size:18px">${editingId?'✏️ Modifica '+p.name:'➕ Nuova persona'}</h3>
+    <div class="grid2">
+      <div class="field"><label class="field-label">Nome</label><input id="f-name" value="${p.name}" placeholder="Es. Marco"></div>
+      <div class="field"><label class="field-label">Relazione</label>
+        <select id="f-relation">${RELATIONS.map(r=>`<option value="${r}"${r===p.relation?' selected':''}>${r}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="field"><label class="field-label">Data importante (compleanno, ecc.)</label><input type="date" id="f-birthday" value="${p.birthday||''}"></div>
+    <div class="field"><label class="field-label">Budget personalizzato (€)</label><input type="number" id="f-budget" value="${p.budget||state.settings.budget}"></div>
+    <div class="field">
+      <label class="field-label">Interessi</label>
+      <div class="tag-input-row"><input id="f-int-input" placeholder="Es. fotografia, cucina… e premi Invio"><button class="btn btn-ghost btn-sm" onclick="addTag('int')">+</button></div>
+      <div class="tags" id="f-int-tags">${p.interests.map(i=>`<span class="tag">${i}<span class="rm" onclick="removeTag('int','${i}')">×</span></span>`).join('')}</div>
+    </div>
+    <div class="field">
+      <label class="field-label">Wishlist (cose che vuole)</label>
+      <div class="tag-input-row"><
