@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎄 RegaloNananale</title>
+<title>🎄 RegaloNanale</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -140,7 +140,7 @@
 <div class="container">
   <div class="header">
     <span class="tree">🎄</span>
-    <h1>RegaloN-anale</h1>
+    <h1>RegaloAnale</h1>
     <p>Il tuo assistente personale per i regali di Natale</p>
   </div>
 
@@ -368,174 +368,4 @@ function showAddForm(existingPerson) {
     </div>
     <div class="field">
       <label class="field-label">Wishlist (cose che vuole)</label>
-      <div class="tag-input-row"><input id="f-wish-input" placeholder="Es. cuffie wireless… e premi Invio"><button class="btn btn-ghost btn-sm" onclick="addTag('wish')">+</button></div>
-      <div class="tags" id="f-wish-tags">${p.wishlist.map(w=>`<span class="tag green">${w}<span class="rm" onclick="removeTag('wish','${w}')">×</span></span>`).join('')}</div>
-    </div>
-    <div class="field"><label class="field-label">Note libere</label><input id="f-notes" value="${p.notes||''}" placeholder="Idee, restrizioni, preferenze…"></div>
-    <div class="row-end">
-      <button class="btn btn-ghost" onclick="cancelForm()">Annulla</button>
-      <button class="btn btn-primary" onclick="savePerson()">💾 ${editingId?'Salva modifiche':'Aggiungi'}</button>
-    </div>
-  </div>`;
-  document.getElementById('f-int-input').addEventListener('keydown', e=>e.key==='Enter'&&(e.preventDefault(),addTag('int')));
-  document.getElementById('f-wish-input').addEventListener('keydown', e=>e.key==='Enter'&&(e.preventDefault(),addTag('wish')));
-  document.getElementById('btn-add-person').style.display = 'none';
-  zone.scrollIntoView({behavior:'smooth',block:'start'});
-}
-
-let formTags = { int: [], wish: [] };
-function addTag(type) {
-  const inp = document.getElementById(`f-${type}-input`);
-  const val = inp.value.trim();
-  if(!val) return;
-  // read existing from DOM
-  const existing = [...document.querySelectorAll(`#f-${type}-tags .tag`)].map(el=>el.textContent.replace('×','').trim());
-  if(existing.includes(val)){ inp.value=''; return; }
-  const cls = type==='wish'?'tag green':'tag';
-  const span = document.createElement('span');
-  span.className = cls;
-  span.innerHTML = `${val}<span class="rm" onclick="removeTag('${type}','${val}')">×</span>`;
-  document.getElementById(`f-${type}-tags`).appendChild(span);
-  inp.value = '';
-}
-function removeTag(type, val) {
-  const tags = document.querySelectorAll(`#f-${type}-tags .tag`);
-  tags.forEach(el=>{ if(el.textContent.replace('×','').trim()===val) el.remove(); });
-}
-
-function getFormTags(type) {
-  return [...document.querySelectorAll(`#f-${type}-tags .tag`)].map(el=>el.textContent.replace('×','').trim()).filter(Boolean);
-}
-
-function savePerson() {
-  const name = document.getElementById('f-name').value.trim();
-  if(!name){ toast('Inserisci un nome!','#c41e3a'); return; }
-  const p = {
-    id: editingId || uid(),
-    name,
-    relation: document.getElementById('f-relation').value,
-    birthday: document.getElementById('f-birthday').value,
-    budget: Number(document.getElementById('f-budget').value) || state.settings.budget,
-    interests: getFormTags('int'),
-    wishlist: getFormTags('wish'),
-    notes: document.getElementById('f-notes').value.trim(),
-  };
-  if(editingId) {
-    state.people = state.people.map(x=>x.id===editingId?p:x);
-    toast(`${p.name} aggiornato ✓`);
-  } else {
-    state.people.push(p);
-    toast(`${p.name} aggiunto! 🎄`);
-  }
-  save(); cancelForm(); render();
-}
-
-function cancelForm() {
-  document.getElementById('add-form-zone').innerHTML='';
-  editingId = null;
-  render();
-}
-
-function editPerson(id) {
-  const p = state.people.find(x=>x.id===id);
-  if(p) showAddForm(p);
-}
-
-function deletePerson(id) {
-  const p = state.people.find(x=>x.id===id);
-  if(!p) return;
-  state.people = state.people.filter(x=>x.id!==id);
-  save(); render();
-  toast(`${p.name} rimosso`, '#c41e3a');
-}
-
-// ── Gift finder ──────────────────────────────────────────────────────────────
-async function findGifts(id) {
-  const p = state.people.find(x=>x.id===id);
-  const budget = Number(document.getElementById(`budget-${id}`)?.value) || state.settings.budget;
-  const apiKey = localStorage.getItem('regalo_apikey');
-  if(!apiKey){ toast('Inserisci la API Key di Gemini nelle impostazioni!','#c41e3a'); switchTab('settings'); return; }
-
-  document.getElementById('modal-title').textContent = `🎁 Idee regalo per ${p.name}`;
-  document.getElementById('modal-budget').textContent = `Budget: €${budget}`;
-  document.getElementById('modal-content').innerHTML = `<div class="loader"><span class="spin">🎄</span>Sto cercando le idee migliori…</div>`;
-  document.getElementById('gift-modal').style.display = 'flex';
-
-  try {
-    const prompt = `Sei un esperto di regali di Natale. Suggerisci 5 regali per questa persona:
-Nome: ${p.name}
-Relazione: ${p.relation}
-Interessi: ${p.interests.join(', ')||'non specificati'}
-Wishlist: ${p.wishlist.join(', ')||'non specificata'}
-Note: ${p.notes||'nessuna'}
-Budget massimo: €${budget}
-
-Rispondi SOLO con un array JSON (nessun markdown, nessun testo extra):
-[{"nome":"...","descrizione":"...","prezzo_stimato":"€XX–€XX","query_ricerca":"...","emoji":"..."}]`;
-
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
-    });
-    const data = await res.json();
-    const rawText = (data.candidates?.[0]?.content?.parts||[]).map(b=>b.text||'').join('');
-    const match = rawText.match(/\[[\s\S]*\]/);
-    const gifts = JSON.parse(match ? match[0] : rawText.replace(/```json|```/g,'').trim());
-    document.getElementById('modal-content').innerHTML = gifts.map(g=>`
-      <div class="gift-item">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
-          <span style="font-size:30px">${g.emoji}</span>
-          <div><div class="gift-title">${g.nome}</div><div class="gift-price">${g.prezzo_stimato}</div></div>
-        </div>
-        <div class="gift-desc">${g.descrizione}</div>
-        <div class="gift-links">
-          <a class="gift-link" href="https://www.google.com/search?q=${encodeURIComponent(g.query_ricerca+' acquisto online')}" target="_blank">🔍 Google</a>
-          <a class="gift-link" href="https://www.amazon.it/s?k=${encodeURIComponent(g.query_ricerca)}" target="_blank">📦 Amazon</a>
-          <a class="gift-link" href="https://www.ebay.it/sch/i.html?_nkw=${encodeURIComponent(g.query_ricerca)}" target="_blank">🏷 eBay</a>
-        </div>
-      </div>`).join('');
-  } catch(e) {
-    document.getElementById('modal-content').innerHTML = `<p style="color:#ff6b6b;text-align:center">Errore: ${e.message}</p>`;
-  }
-}
-
-function closeGiftModal() { document.getElementById('gift-modal').style.display='none'; }
-
-// ── Settings ─────────────────────────────────────────────────────────────────
-function loadSettingsForm() {
-  document.getElementById('set-email').value = state.settings.email||'';
-  document.getElementById('set-freq').value = state.settings.freqDays||15;
-  document.getElementById('freq-val').textContent = state.settings.freqDays||15;
-  document.getElementById('set-budget').value = state.settings.budget||50;
-  document.getElementById('set-apikey').value = localStorage.getItem('regalo_apikey')||'';
-  document.getElementById('set-client-id').value = localStorage.getItem('regalo_client_id')||'';
-  document.getElementById('set-client-secret').value = localStorage.getItem('regalo_client_secret')||'';
-  document.getElementById('set-refresh-token').value = localStorage.getItem('regalo_refresh_token')||'';
-}
-
-function saveSettings() {
-  state.settings.email = document.getElementById('set-email').value;
-  state.settings.freqDays = Number(document.getElementById('set-freq').value);
-  state.settings.budget = Number(document.getElementById('set-budget').value);
-  const apiKey = document.getElementById('set-apikey').value.trim();
-  if(apiKey) localStorage.setItem('regalo_apikey', apiKey);
-  save();
-  toast('Impostazioni salvate ✓');
-}
-
-function saveCredentials() {
-  const cid = document.getElementById('set-client-id').value.trim();
-  const cs = document.getElementById('set-client-secret').value.trim();
-  const rt = document.getElementById('set-refresh-token').value.trim();
-  if(cid) localStorage.setItem('regalo_client_id', cid);
-  if(cs) localStorage.setItem('regalo_client_secret', cs);
-  if(rt) localStorage.setItem('regalo_refresh_token', rt);
-  toast('Credenziali salvate 🔒');
-}
-
-// ── Init ──────────────────────────────────────────────────────────────────────
-render();
-</script>
-</body>
-</html>
+      <div class="tag-input-row"><input id="f-
